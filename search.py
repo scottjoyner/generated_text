@@ -1,5 +1,10 @@
 # Keyword Frequency:
-
+'''
+Keyword Frequency: Count how many times each keyword in the search query appears 
+in the title and description of each item in the list, and then rank the items 
+based on this count. This approach is quick and easy to implement, but it doesn't 
+take into account the context or relevance of each keyword.
+'''
 def rank_by_keyword_frequency(query, items):
     ranked_items = []
     for item in items:
@@ -12,7 +17,12 @@ def rank_by_keyword_frequency(query, items):
   
   
 # Keyword Proximity:
-
+'''
+Keyword Proximity: Check how close together the keywords in the search query are in 
+each title and description, and rank the items based on the proximity. This approach 
+can help to ensure that the items are relevant to the search query, but it can be 
+slower to compute than simply counting keyword frequency.
+'''
 def rank_by_keyword_proximity(query, items):
     ranked_items = []
     for item in items:
@@ -24,7 +34,13 @@ def rank_by_keyword_proximity(query, items):
     return [item[0] for item in ranked_items]
 
 # TF-IDF:
-
+'''
+TF-IDF: Use the Term Frequency-Inverse Document Frequency (TF-IDF) algorithm to 
+calculate the relevance of each item in the list to the search query. This approach 
+takes into account both the frequency of each keyword in the item and the rarity of 
+the keyword in the overall list. It can be more accurate than simple keyword 
+frequency, but it can also be slower to compute.
+'''
 import math
 from collections import Counter
 
@@ -44,7 +60,13 @@ def rank_by_tfidf(query, items):
     return [item[0] for item in ranked_items]
 
 # PageRank:
-
+'''
+PageRank: Use the PageRank algorithm to rank the items in the list based on the number 
+and quality of other items that link to them. This approach is commonly used by search 
+engines to rank web pages, and it can be effective for sorting large lists of items. 
+However, it can be more complex to implement than the other heuristics, and may not 
+be necessary for smaller lists.
+'''
 import networkx as nx
 
 def rank_by_pagerank(query, items):
