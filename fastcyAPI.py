@@ -2,6 +2,9 @@ from fastapi import FastAPI, HTTPException
 from pymongo import MongoClient
 from bson import ObjectId
 from typing import List
+import networkx as nx
+from py2cytoscape.data.cynetwork import CyNetwork
+from py2cytoscape.data.cyrest_client import CyRestClient
 
 app = FastAPI()
 
@@ -15,7 +18,13 @@ graphs = db["graphs"]
 async def get_graph(graph_id: str):
     graph = graphs.find_one({"_id": ObjectId(graph_id)})
     if graph:
-        return graph
+        # Convert the graph data to a NetworkX graph
+        nx_graph = nx.Graph(graph)
+        # Convert the NetworkX graph to a Cytoscape graph
+        cy_network = CyNetwork()
+        cy_network.from_networkx(nx_graph)
+        # Return the Cytoscape graph data
+        return cy_network.to_json()
     else:
         raise HTTPException(status_code=404, detail="Graph not found")
 
@@ -43,5 +52,11 @@ async def get_edge_types():
 @app.post("/savegraph")
 async def save_graph():
     # Format graph data here
-    new_graph_id = graphs.insert_one(graph_data).inserted_id
+    # Convert the graph data to a NetworkX graph
+    nx_graph = nx.Graph(graph_data)
+    # Convert the NetworkX graph to a Cytoscape graph
+    cy_network = CyNetwork()
+    cy_network.from_networkx(nx_graph)
+    # Save the Cytoscape graph data to MongoDB
+    new_graph_id = graphs.insert_one(cy_network.to_json()).inserted_id
     return {"graph_id": str(new_graph_id)}
