@@ -27,3 +27,16 @@ def upload_report():
     file.save(file_path)
     os.chmod(file_path, 0o644)  # set file permissions to not executable
     return jsonify({'message': 'File saved successfully.'}), 200
+
+
+app.config['UPLOAD_FOLDER'] = '/tmp/report-files/'
+
+@app.route('/download-report', methods=['GET'])
+def download_report():
+    guid = request.args.get('guid')
+    if not guid:
+        return jsonify({'error': 'GUID not provided.'}), 400
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], guid)
+    if not os.path.isfile(file_path):
+        return jsonify({'error': 'File not found.'}), 404
+    return send_file(file_path, as_attachment=True)
