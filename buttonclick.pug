@@ -1,0 +1,54 @@
+doctype html
+html(lang="en")
+  head
+    // ... your meta tags, other scripts, and styles
+
+  body
+    // Sample form with inputs
+    form(id='myForm')
+      input(type='text', name='username', placeholder='Username')
+      input(type='password', name='password', placeholder='Password')
+      // Button with ID
+      button(type='button', id='viewProcess') View Process
+
+    script.
+      // Inline JavaScript here
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get the button element
+        var button = document.getElementById('viewProcess');
+
+        // Add click event listener to the button
+        button.addEventListener('click', function() {
+          // Get form data
+          var form = document.getElementById('myForm');
+          var formData = new FormData(form);
+
+          // Prepare data object
+          var data = {};
+          formData.forEach(function(value, key) {
+            data[key] = value;
+          });
+
+          // API call URL
+          var apiUrl = 'https://api.yourdomain.com/endpoint';
+
+          // Call the API
+          fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              // If needed add authorization headers
+              // 'Authorization': 'Bearer ' + accessToken
+            },
+            body: JSON.stringify(data),
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Success:', data);
+            // Perform any action with the returned data
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+        });
+      });
