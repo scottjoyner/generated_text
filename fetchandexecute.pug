@@ -1,0 +1,47 @@
+doctype html
+html(lang="en")
+  head
+    // ... your meta tags, other scripts, and styles
+  
+  body
+    // ... your HTML body
+    button(id='refreshScript') Refresh Script
+
+    script.
+      // Function to fetch and execute script
+      function fetchAndExecuteScript() {
+        // Use a timestamp or unique value to prevent caching
+        const url = 'https://api.yourdomain.com/endpoint-that-returns-js?' + new Date().getTime();
+
+        fetch(url)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.text();
+          })
+          .then(script => {
+            // Remove any old script tag if it exists (optional)
+            const oldScript = document.getElementById('dynamicScript');
+            if (oldScript) {
+              oldScript.remove();
+            }
+
+            // Create a new script element, set its content, and add an ID for potential removal later
+            let scriptElement = document.createElement('script');
+            scriptElement.id = 'dynamicScript';
+            scriptElement.textContent = script;
+
+            // Append the script element to the document's head (or body)
+            document.head.appendChild(scriptElement);
+          })
+          .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+          });
+      }
+
+      // Initial fetch and execute
+      document.addEventListener('DOMContentLoaded', fetchAndExecuteScript);
+
+      // Handle button click to refresh script
+      document.getElementById('refreshScript').addEventListener('click', fetchAndExecuteScript);
