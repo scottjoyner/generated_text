@@ -1,0 +1,79 @@
+extends layouts/_layout.pug
+
+block variables
+	- var activePage = 'api-data-page';
+	- var activeGroup = 'pages';
+
+block title
+	title Data Fetch Page - Vali Admin
+
+block content
+	.app-title
+		div
+			h1
+				i.bi.bi-speedometer
+				|  Data Fetch Page
+			p Fetching and displaying data from API endpoints
+
+		ul.app-breadcrumb.breadcrumb
+			li.breadcrumb-item
+				i.bi.bi-house-door.fs-6
+			li.breadcrumb-item
+				a(href='#') Data Fetch Page
+
+	.row
+		.col-md-6
+			.tile
+				.tile-body
+					h4 Table Data
+					table.table
+						thead
+							tr
+								th Name
+								// Add more table headers as needed
+						tbody#table-data
+							// Data will be populated here from the /api/list-data endpoint
+
+		.col-md-6
+			.tile
+				.tile-body
+					h4 Details
+					#detail-data
+						// Detailed data will be populated here
+
+script.
+	var endpointTable = '/api/list-data';
+	var endpointDetail = '/api/detail-data'; // Assuming there's a separate endpoint for the right side details
+
+	function fetchData(endpoint, callback) {
+		fetch(endpoint)
+			.then(response => response.json())
+			.then(data => callback(data))
+			.catch(error => console.error('Error fetching data:', error));
+	}
+
+	function populateTableData(data) {
+		const tableBody = document.getElementById('table-data');
+		data.forEach(item => {
+			const row = document.createElement('tr');
+			const cell = document.createElement('td');
+			cell.textContent = item.name; // Assuming the data object has a "name" property
+			row.appendChild(cell);
+			tableBody.appendChild(row);
+		});
+	}
+
+	function populateDetailData(data) {
+		const detailContainer = document.getElementById('detail-data');
+		// Add logic to populate detail data using mixins or any other method
+		// This is just a placeholder
+		detailContainer.textContent = JSON.stringify(data, null, 2);
+	}
+
+	document.addEventListener('DOMContentLoaded', () => {
+		fetchData(endpointTable, populateTableData);
+		fetchData(endpointDetail, populateDetailData);
+	});
+
+style.
+	/* Include your CSS styling here */
