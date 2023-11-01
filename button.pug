@@ -1,3 +1,11 @@
-mixin downloadButton(report_id)
-  a(href=`/reporting/download-report?report_id=${report_id}` download)
+mixin downloadButton(report_id, filename)
+  a(href=`/reporting/download-report?report_id=${report_id}` download=filename)
     button Download Report
+
+doctype html
+html
+  head
+    title Download Report
+  body
+    - let filename = `report_${new Date().toISOString().slice(0, 10)}.pdf`; // e.g., report_2023-11-01.pdf
+    +downloadButton(1, filename)
