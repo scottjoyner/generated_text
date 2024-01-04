@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cytoscape.js Map Draft with Expand-Collapse Plugin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.19.0/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-expand-collapse@3.2.0/cytoscape-expand-collapse.js"></script>
+    <style>
+        #cy {
+            width: 800px;
+            height: 600px;
+            display: block;
+            border: 1px solid black;
+        }
+        textarea {
+            width: 800px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
+    <textarea id="graphInput"></textarea>
+    <button id="updateGraph">Update Graph</button>
+
+    <script>
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: [],
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#666',
+                        'label': 'data(id)'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#ccc',
+                        'target-arrow-color': '#ccc',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+            layout: {
+                name: 'grid'
+            }
+        });
+
+        // Initialize the expand-collapse plugin
+        cy.expandCollapse({
+            layoutBy: {
+                name: 'preset',
+                animate: true
+            },
+            fisheye: true,
+            animate: true
+        });
+
+        document.getElementById('updateGraph').addEventListener('click', function() {
+            try {
+                var eles = JSON.parse(document.getElementById('graphInput').value);
+                cy.json({elements: eles});
+            } catch (e) {
+                alert('Invalid JSON');
+            }
+        });
+    </script>
+</body>
+</html>
