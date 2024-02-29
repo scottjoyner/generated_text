@@ -7,19 +7,19 @@ DIRECTORY="path/to/your/files"
 TODAY=$(date +%Y%m%d)
 YESTERDAY=$(date -d "yesterday" +%Y%m%d)
 
-# Loop through all of today's files in the directory
-for TODAY_FILE in "$DIRECTORY"/*"$TODAY"*.csv; do
+# Loop through all of today's compressed CSV files in the directory
+for TODAY_FILE_GZ in "$DIRECTORY"/*"$TODAY"*.csv.gz; do
   # Construct the filename for yesterday's file by replacing today's date with yesterday's
-  YESTERDAY_FILE="${TODAY_FILE/$TODAY/$YESTERDAY}"
+  YESTERDAY_FILE_GZ="${TODAY_FILE_GZ/$TODAY/$YESTERDAY}"
 
-  # Check if yesterday's file exists
-  if [ -f "$YESTERDAY_FILE" ]; then
+  # Check if yesterday's compressed file exists
+  if [ -f "$YESTERDAY_FILE_GZ" ]; then
     # Define the output file for differences
-    DIFF_OUTPUT="${TODAY_FILE%.csv}_diff.csv"
+    DIFF_OUTPUT="${TODAY_FILE_GZ%.csv.gz}_diff.csv"
 
-    # Sort both files to temporary sorted files
-    sort "$TODAY_FILE" > sorted_today.csv
-    sort "$YESTERDAY_FILE" > sorted_yesterday.csv
+    # Use zcat to decompress and sort both files to temporary sorted files
+    zcat "$TODAY_FILE_GZ" | sort > sorted_today.csv
+    zcat "$YESTERDAY_FILE_GZ" | sort > sorted_yesterday.csv
 
     # Use diff to compare the sorted files, then filter out only the differing lines
     # Ignoring case and leading/trailing whitespace for comparison
@@ -28,8 +28,8 @@ for TODAY_FILE in "$DIRECTORY"/*"$TODAY"*.csv; do
     # Optionally, clean up the temporary sorted files
     rm sorted_today.csv sorted_yesterday.csv
 
-    echo "Differences between $TODAY_FILE and $YESTERDAY_FILE have been written to $DIFF_OUTPUT"
+    echo "Differences between $TODAY_FILE_GZ and $YESTERDAY_FILE_GZ have been written to $DIFF_OUTPUT"
   else
-    echo "No matching file for $YESTERDAY_FILE found."
+    echo "No matching file for $YESTERDAY_FILE_GZ found."
   fi
 done
