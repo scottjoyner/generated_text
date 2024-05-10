@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
-import os
-import json
+import os, json, glob
 from datetime import datetime
 
 app = Flask(__name__)
@@ -60,6 +59,43 @@ def save_user_state():
         'user_id': user_id,
         'file_path': file_path,
         'data_file_path': data_file_path
+    }), 200
+
+@app.route('/get-last-activity', methods=['GET'])
+def get_last_activity():
+    user_id = request.headers.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is missing from headers'}), 400
+
+    user_path = os.path.join(app.config['UPLOAD_FOLDER'], user_id)
+    
+    # Check if user folder exists
+    if not os.path.exists(user_path):
+        return jsonify({'error': 'No data found for this user'}), 404
+    
+    # Find the most recent activity folder by timestamp embedded in filenames
+    list_of_files = glob.glob(f"{user_path}/**/*", recursive=True)
+    if not list_of_files:
+        return jsonify({'error': 'No activity files found for this user'}), 404
+
+    # Filter to find the latest PNG and JSON files
+    latest_png = max((f for f in list_of_files if f.endswith('.png')), key=os.path.getctime, default=None)
+    latest_json = max((f for f in list_of_files if f.endswith('.json')), key=os.path.getctime, default=None)
+
+    if not latest_png or not latest_json:
+        return jsonify({'error': 'Files are missing'}), 404
+
+    # Since only data (not files) can be easily sent back in a single response,
+    # we need to decide what to do. Here we're choosing to send JSON data and 
+    # provide a link to download the image.
+    data = {}
+    with open(latest_json, 'r') as json_file:
+        data = json.load(json_file)
+
+    return jsonify({
+        'message': 'Data retrieved successfully',
+        'image_url': request.host_url.rstrip('/') + latest_png[1:],
+        'data': data
     }), 200
 
 if __name__ == '__main__':
