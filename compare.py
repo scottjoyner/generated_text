@@ -1,24 +1,25 @@
+import os
+import gzip
 import pandas as pd
+from datetime import datetime, timedelta
 
-# sample data
-data = {
-    'Column1': ['Hello world', 'OpenAI is great', 'GPT-4 is amazing'],
-    'Column2': ['Hello earth', 'OpenAI is awesome', 'GPT-4 is superb']
-}
+directory = "path/to/your/files"
+today = datetime.today().strftime("%Y%m%d")
+yesterday = (datetime.today() - timedelta(days=1)).strftime("%Y%m%d")
 
-df = pd.DataFrame(data)
+for filename in os.listdir(directory):
+    if filename.endswith(f"{today}.csv.gz"):
+        yesterday_filename = filename.replace(today, yesterday)
+        yesterday_file_path = os.path.join(directory, yesterday_filename)
 
-# function to compare two strings
-def compare_strings(str1, str2):
-    str1_words = set(str1.split())
-    str2_words = set(str2.split())
+        if os.path.isfile(yesterday_file_path):
+            diff_output = os.path.join(directory, f"{filename}_diff.csv")
 
-    common_words = str1_words & str2_words
-    different_words = (str1_words | str2_words) - common_words
+            today_df = pd.read_csv(os.path.join(directory, filename), compression='gzip')
+            yesterday_df = pd.read_csv(yesterday_file_path, compression='gzip')
+            diff_df = today_df.merge(yesterday_df, indicator=True, how='outer').loc[lambda x: x['_merge'] != 'both']
 
-    return ', '.join(different_words)
-
-# create a new column for the differences
-df['Differences'] = df.apply(lambda row: compare_strings(row['Column1'], row['Column2']), axis=1)
-
-print(df)
+            diff_df.to_csv(diff_output, index=False)
+            print(f"Differences between {filename} and {yesterday_filename} have been written to {diff_output}")
+        else:
+            print(f"No matching file for {yesterday_filename} found.")
