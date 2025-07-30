@@ -1,0 +1,81 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{times}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Patent Application}
+\lhead{\textsc{Inventor Name}}
+\cfoot{\thepage}
+
+% Section formatting
+\titleformat{\section}{\large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+% Title data
+\title{\Huge\bfseries Patent Application Title}
+\author{\textsc{Inventor Name} \\ \texttt{inventor@email.com}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\vspace{1em}
+\section*{Abstract}
+A brief summary of the invention, its field, purpose, and advantages. Generally 150 words or less.
+
+\vspace{1em}
+\section*{Field of the Invention}
+Describe the technical field of the invention, e.g., "This invention relates to vehicle safety systems, and more specifically to...".
+
+\vspace{1em}
+\section*{Background of the Invention}
+Describe the problem, prior art, limitations in current solutions, and why a new invention is needed.
+
+\vspace{1em}
+\section*{Summary of the Invention}
+Summarize the inventive solution and its benefits. Mention key components and novel features.
+
+\vspace{1em}
+\section*{Brief Description of the Drawings}
+\begin{enumerate}[label=Figure \arabic*:]
+    \item Illustration of the system overview.
+    \item Block diagram showing key components.
+    \item Flowchart of method steps (if applicable).
+\end{enumerate}
+
+\vspace{1em}
+\section*{Detailed Description of the Invention}
+Provide a full and enabling description of the invention with reference to figures:
+\begin{itemize}
+    \item Construction and configuration of the components.
+    \item Methods of use or operation.
+    \item Embodiments and alternatives.
+\end{itemize}
+
+\vspace{1em}
+\section*{Claims}
+\begin{enumerate}[label=\arabic*.]
+    \item A device comprising: \\
+    \quad a component A configured to ...; \\
+    \quad a component B operatively coupled to ...; \\
+    \quad wherein ...
+    
+    \item The device of claim 1, wherein ...
+    
+    \item A method comprising the steps of: \\
+    \quad receiving ...; \\
+    \quad processing ...; \\
+    \quad outputting ...
+\end{enumerate}
+
+\vspace{1em}
+\section*{Abstract of the Disclosure}
+(Optional) Repeat the abstract in more technical terms if needed.
+
+\end{document}
