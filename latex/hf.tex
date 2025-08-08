@@ -1,0 +1,208 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[colorlinks]{hyperref}
+\begin{document}
+
+\section*{Hugging Face Hub API Integration Proposal}
+
+This document outlines a proposal for integrating the Hugging Face Hub API into our enterprise environment, detailing the specific API endpoints (for model search, model download, and dataset access) that need to be accessed through the corporate firewall. It is organized to address the concerns of different stakeholders in the organization: **Business Team**, **Risk/Compliance Team**, **IT/Infrastructure Team**, and **Technical Delivery Team**. The Hugging Face Hub is a widely-used platform hosting a vast collection of machine learning models and datasets (over 1.7 million models and 400k datasets as of recent counts):contentReference[oaicite:0]{index=0}. Leveraging this resource can accelerate our AI/ML initiatives, but we must do so in a secure and well-justified manner.
+
+\section{Technical Overview of the Hugging Face Hub API}
+This section describes the relevant Hugging Face Hub API endpoints and how they are used, focusing on model search, model metadata retrieval, model file downloads, and dataset access. These are the endpoints our systems will call through the firewall.
+
+\subsection{Model Search and Metadata API}
+The Hugging Face Hub provides a REST API to search and list available ML models. The primary endpoint is:
+\begin{itemize}
+    \item \textbf{GET `/api/models`}: Retrieves information about models on the Hub:contentReference[oaicite:1]{index=1}. This endpoint supports query parameters to filter and search the model repository:
+    \begin{itemize}
+        \item \texttt{search}: substring to search within model names and descriptions (e.g. `"bert"` to find models with "bert" in their name):contentReference[oaicite:2]{index=2}.
+        \item \texttt{author}: filter by a specific user or organization (e.g. `"huggingface"` or our organization’s name):contentReference[oaicite:3]{index=3}.
+        \item \texttt{filter}: filter by model tags such as task or library (e.g. `"text-classification"` or `"pytorch"`):contentReference[oaicite:4]{index=4}.
+        \item \texttt{sort}: sorting criterion for results, such as number of downloads or last modified date:contentReference[oaicite:5]{index=5}.
+        \item \texttt{direction}: sort direction (`-1` for descending, or `1`/`+1` for ascending):contentReference[oaicite:6]{index=6}.
+        \item \texttt{limit}: maximum number of models to return per page (for pagination control):contentReference[oaicite:7]{index=7}.
+        \item \texttt{full}: boolean flag; if true, include full metadata for each model (all tags, file list, etc.) in the response:contentReference[oaicite:8]{index=8}.
+    \end{itemize}
+    The response from `/api/models` is paginated and returns a list of model entries with their metadata (each entry is essentially a \texttt{ModelInfo} object in the Hub schema). Important metadata fields include the model’s unique ID (`repo_id`), author, last modified timestamp, number of downloads, number of likes, and an array of tags (which encode information like library framework, task type, language, and license):contentReference[oaicite:9]{index=9}:contentReference[oaicite:10]{index=10}. For example, a model’s tags might include entries such as \texttt{"library:pytorch"}, \texttt{"license:mit"}, or \texttt{"pipeline\_tag:question-answering"}, indicating the model’s framework, usage license, and task category respectively:contentReference[oaicite:11]{index=11}.
+    \item \textbf{GET `/api/models/{repo\_id}`}: Retrieves detailed information for a specific model repository:contentReference[oaicite:12]{index=12}. (A repository is identified by its namespace and name, e.g. `author/model-name`.) This returns a JSON with comprehensive metadata about the model. In addition to the fields above, it includes:
+    \begin{itemize}
+        \item \textbf{Identity and Usage Stats}: model ID, author/organization, creation date, last modification date, download count, and like count:contentReference[oaicite:13]{index=13}:contentReference[oaicite:14]{index=14}.
+        \item \textbf{Tags and Taxonomy}: the list of all tags associated with the model (libraries, tasks, languages, licenses, etc.):contentReference[oaicite:15]{index=15}, and the primary task pipeline tag (e.g. \texttt{"text-classification"} or \texttt{"image-segmentation"}):contentReference[oaicite:16]{index=16}.
+        \item \textbf{Technical Metadata}: framework/library used (e.g. TensorFlow or PyTorch):contentReference[oaicite:17]{index=17}, and whether the model is gated or requires special access (for example, some models are flagged as requiring an acceptance of terms).
+        \item \textbf{License Information}: the model’s license (e.g. Apache-2.0, MIT, CC-BY, or other) as specified by the publisher:contentReference[oaicite:18]{index=18}. This is critical for compliance – it tells us under what terms the model can be used (commercial use allowed, etc.).
+        \item \textbf{Contents (Files)}: a list of files in the model repository (often called \texttt{siblings}) with filenames and potentially sizes or hashes:contentReference[oaicite:19]{index=19}. This typically includes model weights (e.g. `.bin` or `.safetensors` files), configuration files (`config.json`), tokenizer files (`vocab.txt`, merges), the README markdown (model card), etc.
+        \item \textbf{Extended Data}: if available, fields like the base model (if this model is a fine-tuned derivative of another model), the datasets used to train the model, and any Spaces (web apps) that use this model:contentReference[oaicite:20]{index=20}. These appear when relevant and give context about the model’s lineage and usage.
+    \end{itemize}
+    In summary, the model metadata API gives us all the necessary information about a model’s characteristics and contents without downloading the model itself. This metadata is crucial for our use-case: for example, our application can programmatically search models by certain criteria (task, language, etc.) and then inspect their metadata (especially the license and other tags) to decide if they are appropriate for enterprise use.
+\end{itemize}
+
+\paragraph{Metadata Importance:} The rich metadata ensures we can enforce policies like only using models with permissive licenses or only models that meet certain technical criteria. We will leverage the \texttt{license} field and other tags in these API responses to automate compliance checks. (For instance, before a model is approved for internal use, our system can verify that \texttt{license:\{X\}} is an acceptable license type according to our policy.)
+
+\subsection{Model Download and File Access}
+Once a suitable model is identified (via the search and metadata endpoints above), the next step is to download the actual model files (e.g., weights, config, etc.). Hugging Face model repositories use Git under the hood for versioning, and large files are stored via Git LFS. The Hub provides reliable ways to fetch these files:
+\begin{itemize}
+    \item \textbf{Direct Download via HTTPS:} Every file in a model repository can be downloaded with a specific URL. The generic pattern is: 
+    \begin{center}
+    \texttt{https://huggingface.co/\{repo\_id\}/resolve/\{revision\}/\{filename\}}
+    \end{center}
+    where \texttt{\{repo\_id\}} is the model repo (e.g. `author/model-name`), \texttt{\{revision\}} can be a git revision (typically a branch name like `main` or a specific commit hash or tag), and \texttt{\{filename\}} is the name of the file (for example, `pytorch_model.bin`). For example, the URL for a model weight file might look like:
+    \begin{center}
+    \small\texttt{https://huggingface.co/julien-c/EsperBERTo-small/resolve/main/pytorch\_model.bin}
+    \end{center}
+    :contentReference[oaicite:21]{index=21}. Accessing this URL will initiate a download of the file. **Note:** For large files, Hugging Face may redirect the request to a cloud storage URL (Cloudfront CDN) for efficiency:contentReference[oaicite:22]{index=22}, but this is transparent to the client. From a firewall perspective, this means our network must allow HTTPS traffic to \texttt{huggingface.co} (and its CDN endpoints) so that these downloads can proceed.
+    \item \textbf{Python Client (huggingface\_hub Library):} Developers can use the official Python API client. For instance, the function `hf_hub_download(repo_id, filename, ...)` will handle constructing the correct URL, downloading the file, and caching it locally:contentReference[oaicite:23]{index=23}:contentReference[oaicite:24]{index=24}. This library is convenient and will also retry/resume downloads if needed, but under the hood it uses the same HTTPS endpoints described above. We may encourage using the Python client in our implementation to simplify development.
+    \item \textbf{Repository Download:} There is also an endpoint to download an entire repository snapshot. Using the Python library, `snapshot_download(repo_id, revision)` will pull all files in the repo at once:contentReference[oaicite:25]{index=25}. This might be useful if we want a full clone of the model repository internally. However, it is more bandwidth-intensive; often we might only need specific files (like the model weights and config).
+\end{itemize}
+
+\noindent **Caching and Efficiency:** Hugging Face Hub responses and downloads are cache-friendly. The library caches files on disk with a content-based hash, so repeated downloads of the same file won’t re-fetch from the internet:contentReference[oaicite:26]{index=26}. Additionally, the CDN caching means we benefit from geographically distributed servers for faster downloads:contentReference[oaicite:27]{index=27}. From an IT perspective, once a model is downloaded and cached internally, subsequent uses of that model by our team will not hit the external network. We should plan for sufficient storage for caching models/datasets internally.
+
+\subsection{Dataset Search and Access API}
+The Hub also hosts a large number of public datasets. The APIs for datasets are analogous to models:
+\begin{itemize}
+    \item \textbf{GET `/api/datasets`}: Lists datasets in the Hub:contentReference[oaicite:28]{index=28}, supporting similar query parameters:
+    \begin{itemize}
+        \item \texttt{search}: substring search within dataset names:contentReference[oaicite:29]{index=29}.
+        \item \texttt{author}: filter by dataset creator/organization:contentReference[oaicite:30]{index=30}.
+        \item \texttt{filter}: filter by dataset tags (e.g. task categories or languages, like \texttt{"task\_categories:question-answering"} or \texttt{"languages:en"} for English datasets):contentReference[oaicite:31]{index=31}.
+        \item \texttt{sort}, \texttt{direction}, \texttt{limit}, \texttt{full}: work similarly to the model listing above (e.g., sort by most downloaded datasets):contentReference[oaicite:32]{index=32}.
+    \end{itemize}
+    The response provides metadata for each dataset: including an identifier, author, last updated date, download count, and tags (tags for datasets include things like dataset domain, language, license, size, etc.). Just like models, we can retrieve detailed info for a specific dataset via the next endpoint.
+    \item \textbf{GET `/api/datasets/{repo_id}`}: Retrieves detailed information about a specific dataset:contentReference[oaicite:33]{index=33}. This includes fields analogous to model info (id, author, description, etc.) and a list of files in the dataset repository. Many datasets come with multiple files (for instance, splits of the data, metadata like a dataset card README, etc.). For large datasets, the Hub may provide special links to optimized data formats (Parquet files etc.), and the API has specific endpoints (e.g., `/api/datasets/{repo_id}/parquet`) to list these:contentReference[oaicite:34]{index=34}. However, for our purposes, we can primarily use the metadata to identify which data files we want and then download them directly.
+    \item \textbf{Dataset Download:} Dataset files can be downloaded through the same mechanism as model files. Using the Python client, one would specify `repo_type="dataset"` in `hf_hub_download` to fetch a file from a dataset repo:contentReference[oaicite:35]{index=35}. The URL pattern is similarly `https://huggingface.co/datasets/<dataset-id>/resolve/<revision>/<filename>`. For example, to download a dataset file `data.csv` from a dataset repository, our systems would fetch `https://huggingface.co/datasets/<author>/<dataset>/resolve/main/data.csv`. As with models, large dataset files might be streamed or downloaded via CDN. The Hugging Face \texttt{datasets} library (if used) can abstract this by allowing us to load datasets with a single command (it will handle chunked downloads, caching, etc.), but internally it also reaches out to these Hub endpoints.
+\end{itemize}
+
+\noindent **Note:** Dataset metadata often includes license information as well (e.g., CC licenses or others). We will similarly need to use this metadata to ensure only datasets with appropriate licenses are pulled into our environment.
+
+\paragraph{Firewall Requirements (IT Focus):} From a network perspective, all the above interactions require outbound HTTPS (port 443) access to the Hugging Face Hub. Specifically:
+\begin{itemize}
+    \item The base domain \texttt{huggingface.co} will be accessed for API calls (under the `/api/*` paths):contentReference[oaicite:36]{index=36} and initial file download requests. 
+    \item For file downloads, our requests to \texttt{huggingface.co} may redirect to CDN domains (such as Cloudfront) for large files:contentReference[oaicite:37]{index=37}. The IT team should allow these redirects. In practice, ensuring general HTTPS access to \texttt{huggingface.co} and its subdomains (or associated AWS Cloudfront domains) is sufficient. The endpoints we anticipate needing to allow include:
+          \begin{itemize}
+            \item `https://huggingface.co/api/models[...]` (and sub-routes for specific models)
+            \item `https://huggingface.co/api/datasets[...]`
+            \item `https://huggingface.co/<user>/<model>/resolve/...` (for model file downloads)
+            \item `https://huggingface.co/datasets/<user>/<dataset>/resolve/...` (for dataset file downloads)
+          \end{itemize}
+          All traffic is outbound (initiated by our side) and can be authenticated with tokens if needed (the Hub supports token authentication for private or gated content, but for public models/datasets, no auth token is required by default).
+    \item The volume of data can be significant when downloading large models or datasets (some models are several gigabytes). IT should be aware for network planning/QoS. We will mitigate this by caching and only downloading what is necessary.
+\end{itemize}
+
+\vspace{1em} % just a little vertical space
+
+\section{Business Justification (Value Proposition)}
+This section is intended for business stakeholders and decision-makers, to explain why integrating with Hugging Face is beneficial for the organization.
+
+\subsection*{Strategic Value and ROI}
+Adopting the Hugging Face Hub API offers significant advantages for our AI/ML initiatives:
+\begin{itemize}
+    \item \textbf{Accelerated Development:} The Hub gives us instant access to a vast repository of state-of-the-art pre-trained models and high-quality datasets maintained by the AI community:contentReference[oaicite:38]{index=38}. This means our data science teams can quickly find baseline models for tasks (NLP, computer vision, etc.) instead of building models from scratch. Faster model prototyping and development translates to quicker time-to-market for AI-driven features.
+    \item \textbf{Reduced Costs:} By leveraging existing models (many of which are open-source), we save on the significant compute and human resource costs required to train models from the ground up. For example, training a large language model could cost tens of thousands of dollars in cloud compute; using a pre-trained model from Hugging Face (with minor fine-tuning if needed) can achieve results at a fraction of that cost.
+    \item \textbf{Innovation and Competitive Edge:} The Hub is where the AI community shares its latest innovations. Integrating with it means our team can stay up-to-date with cutting-edge techniques and architectures. We can experiment with the latest models (for instance, new transformer architectures, or domain-specific models released by research labs) as soon as they’re available. This helps keep us competitive in our industry by continuously improving our AI capabilities.
+    \item \textbf{Use Case Coverage:} With over a million models and hundreds of thousands of datasets:contentReference[oaicite:39]{index=39}, the Hub likely contains solutions or starting points for many of our business problems – from language translation to sentiment analysis to image recognition. This breadth increases the likelihood that we find a model closely aligned to our needs, including niche areas (e.g., a model trained on financial texts for our finance department’s needs).
+    \item \textbf{Community Support and Knowledge:} Each model repository often includes a model card (documentation) and community discussions. This provides valuable information – such as the model’s intended use, performance metrics, and limitations – which our team can use to make informed decisions. Essentially, we tap into the collective knowledge of the AI community. 
+\end{itemize}
+
+\subsection*{Justifying the Investment}
+The investment needed for this integration is modest compared to the benefits:
+\begin{itemize}
+    \item The Hugging Face Hub itself is free to use for public models and datasets. There is no licensing fee to access the content. Our primary investment is the engineering effort to integrate the API and the infrastructure effort to manage downloads.
+    \item Engineering work includes developing a connector or utilizing Hugging Face’s provided libraries. This is a one-time development cost. Hugging Face provides well-documented SDKs (Python, JavaScript) which will reduce development time:contentReference[oaicite:40]{index=40}:contentReference[oaicite:41]{index=41}.
+    \item By enabling our existing teams (data scientists, ML engineers) to use these resources, we amplify their productivity. A task that might have taken weeks (to collect data and train a model) could be achieved in days by fine-tuning a pre-trained model from the Hub.
+    \item **Opportunity cost:** If we do not leverage external AI models, we risk falling behind competitors who do. Many enterprises are already using Hugging Face or similar platforms as part of their AI stack, as evidenced by the large community and even enterprise partnerships (Hugging Face reports over 50k organizations using their platform):contentReference[oaicite:42]{index=42}.
+    \item The integration will also be a foundation for future projects – once the pipeline to search, evaluate, and download models is in place, any new project can readily utilize it. This is a reusable asset for the company.
+\end{itemize}
+
+In summary, from a business perspective, this integration enables us to deliver AI solutions faster and more cost-effectively, while staying at the forefront of ML innovation. The relatively small investment in integration effort is well-justified by the potential return in saved development time, enhanced capabilities, and competitive advantage.
+
+\section{Risk and Security Considerations}
+This section addresses the concerns of the Risk/Compliance team, ensuring that integrating with the Hugging Face Hub does not expose the enterprise to undue risk. We consider data security, compliance (including licenses), and other potential threats, along with mitigation strategies.
+
+\subsection*{Data Security and Privacy}
+One key point: all interactions with the Hugging Face Hub in our scenario are **outbound** (our systems fetching public model/data assets). We are not sending sensitive internal data to the outside; we are retrieving information. This dramatically limits our exposure:
+\begin{itemize}
+    \item \textbf{Outbound Connections Only:} Our environment will initiate HTTPS requests to the Hub endpoints. No inbound connections are opened. This is similar to a user downloading a file from a trusted website. The firewall will ensure only the specified endpoints are reachable.
+    \item \textbf{No Internal Data Shared:} We will not be uploading any proprietary data to Hugging Face as part of this integration (we are only downloading open-source models and datasets). Thus, there is no risk of data leakage of our sensitive information through this channel.
+    \item \textbf{Encrypted Traffic:} All API calls and downloads occur over HTTPS (TLS encryption), ensuring that the content in transit is secure from eavesdropping or tampering.
+\end{itemize}
+
+\subsection*{Source Authenticity and Malware Risks}
+Whenever bringing in external code or data, there is a risk (however small) of malicious content:
+\begin{itemize}
+    \item \textbf{Model File Safety:} Hugging Face model files can include not just numeric weights but potentially code (in some cases, model repositories may have Python pickled objects or scripts). To mitigate risks, Hugging Face has implemented security scanning features: the platform performs malware scanning on uploaded files, scans for malicious pickles in model files, and even checks for leaked secrets in repositories:contentReference[oaicite:43]{index=43}. Hugging Face is proactive about security and is SOC 2 Type 2 certified:contentReference[oaicite:44]{index=44}, indicating robust operational security practices.
+    \item \textbf{Internal Scanning:} As an added measure, our security team can treat any downloaded model or dataset as we would third-party software: by scanning files with our own security tools (for viruses or malware) before they are used in our environment. In practice, the risk is low – models are mostly data (tensors) and not executable – but this check provides defense in depth.
+    \item \textbf{Sandboxing Execution:} We will enforce that any experimentation with downloaded models (especially if they include custom code, e.g. a model with an unusual architecture) is done in a controlled environment. For example, running model code in containers or sandboxed processes can prevent a scenario where running a model could execute malicious code.
+\end{itemize}
+
+\subsection*{Compliance: Licenses and Usage Policies}
+A major focus for compliance is ensuring we respect the licenses of models and datasets, and that none of the content brings legal risk:
+\begin{itemize}
+    \item \textbf{License Filtering:} We will use the metadata (the \texttt{license} field in model/dataset info) to filter out any resources that are not permitted for our use. For instance, if a model is licensed for non-commercial use only, our process can flag or skip it. Many models on Hugging Face carry permissive licenses (MIT, Apache 2.0) or are public domain; those are generally safe for enterprise use. Proprietary or restrictive licenses will be identified and avoided. This can be automated via the API (e.g., search or filter by license tags, such as \texttt{license:apache-2.0}).
+    \item \textbf{Gated Content:} Some datasets or models are flagged as “gated,” meaning they require users to agree to terms (for example, datasets with personal data or models with ethical use guidelines):contentReference[oaicite:45]{index=45}:contentReference[oaicite:46]{index=46}. Our integration will by default only access publicly available, ungated resources. If we ever need a gated resource, it will go through an approval process and use an authenticated token tied to an agreement. Hugging Face supports using access tokens for such cases, ensuring that only authorized accounts (with accepted terms) can download that content.
+    \item \textbf{Attribution and Use}: We will maintain records of which external models/datasets we use in our products, to ensure we can provide attribution if required by the license (e.g., some open licenses require giving credit). The metadata from the Hub often includes citation information or links to papers for the model – our process will capture and store this info as needed.
+    \item \textbf{Data Privacy of Datasets:} If we download public datasets, we will review their nature. We will avoid datasets that contain personal identifiable information (PII) unless they are properly anonymized and cleared for use. Many popular datasets on the Hub have been widely used in research and come with documentation about their content.
+\end{itemize}
+
+\subsection*{Hugging Face Platform Trust}
+It’s worth noting that Hugging Face is a reputable platform in the AI industry, used by many organizations (including large tech companies) as a source of models. They offer enterprise plans with enhanced security features (such as private instances, single sign-on, audit logs, etc.):contentReference[oaicite:47]{index=47}:contentReference[oaicite:48]{index=48}. While we are planning to use the public Hub, the maturity of the platform and its security certifications (GDPR compliance, SOC2) provides confidence that interacting with it is low-risk:contentReference[oaicite:49]{index=49}. The company has a security email contact and actively patches issues, indicating a responsible security posture:contentReference[oaicite:50]{index=50}.
+
+\subsection*{Mitigation Summary}
+In summary, the main risks (malicious content, license compliance) are being addressed through:
+\begin{itemize}
+    \item Technical safeguards (scanning, sandboxing).
+    \item Programmatic enforcement using metadata (license filtering, gating checks).
+    \item Policy and process (reviewing what we download, tracking usage).
+\end{itemize}
+With these measures, the enterprise can confidently proceed, knowing that we are controlling what enters our environment and under what terms.
+
+\section{Technical Implementation and Delivery Plan}
+This section is for the technical delivery team and architects. It outlines how we plan to implement the integration, the effort required, and how we will ensure the solution meets the needs.
+
+\subsection*{Architecture and Integration Approach}
+We will integrate with Hugging Face via a controlled service/module that handles all communication with the Hub:
+\begin{itemize}
+    \item We will develop a **Hub Integration Service** (could be a lightweight internal API or library) that provides functions like “search models”, “get model info”, “download model”, “search datasets”, etc. This service will internally call the Hugging Face Hub API endpoints discussed earlier.
+    \item Where possible, we will utilize the official Hugging Face Hub SDK (Python library \texttt{huggingface\_hub}):contentReference[oaicite:51]{index=51}. This library already wraps the REST API and handles details like pagination, retries, and caching. Using it can accelerate our development and reduce bugs.
+    \item The integration service will be containerized and deployed within our environment. It will have egress internet access (through the firewall rules configured by IT) to reach \texttt{huggingface.co}.
+    \item We will store/cache results and files appropriately. For example, when a model is downloaded, it will be saved to a secure model registry storage or database within our network, so that future uses of that model don’t require going out to the internet again.
+    \item The service will also log all downloads and accesses (for auditing purposes). This log can be reviewed to ensure compliance (e.g., which models were fetched, by whom, when).
+\end{itemize}
+
+\subsection*{Development Effort Estimate}
+Implementing this integration is relatively straightforward:
+\begin{itemize}
+    \item **API Client Implementation:** Using the Hugging Face SDK, functions like `list_models`, `model_info`, and `hf_hub_download` are readily available:contentReference[oaicite:52]{index=52}:contentReference[oaicite:53]{index=53}. We mainly need to wrap these in our internal interfaces. Estimated effort: a few days to implement and test core functionalities.
+    \item **Firewall Coordination:** Work with IT to open the necessary firewall route (as described) – this is a one-time setup. Estimated effort: minimal (just coordination and testing connectivity).
+    \item **Testing and Validation:** We will test with a handful of models and datasets to ensure the pipeline works end-to-end (searching, fetching metadata, downloading files, caching). We should include a test of a large model to observe performance, and a gated model (with a dummy account) to ensure our system appropriately handles rejection of unauthorized content.
+    \item **Documentation and Training:** Documenting how internal users can request a model or dataset, or how they can use the integration service. Possibly a short training for data scientists on how to invoke this service (which could even be as simple as calling a function in a notebook).
+\end{itemize}
+Overall, we anticipate the first version of this integration can be delivered in a couple of sprints (2–4 weeks) given its straightforward nature, and much of that time accounts for testing and compliance review rather than complex coding.
+
+\subsection*{Future Considerations}
+While this proposal focuses on read-access (searching and downloading public models/datasets), in the future we might consider:
+\begin{itemize}
+    \item **Uploading Models**: If our team fine-tunes or trains new models that are not sensitive, we might want to contribute back to the Hub or at least host them for our internal reuse. The Hugging Face API also supports creating and uploading to repositories. We have not included that scope here, but the groundwork we lay now could be extended to that use-case.
+    \item **Enterprise Plan**: If we scale up usage heavily or require guaranteed uptime/SLAs, we might explore Hugging Face’s Enterprise offerings:contentReference[oaicite:54]{index=54}:contentReference[oaicite:55]{index=55}. That could provide features like private hubs, higher rate limits:contentReference[oaicite:56]{index=56}, and stricter access control (e.g., enforce that only our organization’s members can access the Hub from our network):contentReference[oaicite:57]{index=57}. At present, our needs are met by the public Hub and our own governance, but it’s good to know an upgrade path exists.
+    \item **Model Inference Endpoints**: Separately from the Hub, Hugging Face also offers Inference Endpoints (hosted model APIs) as a product. In this proposal we’re focused on self-hosting models (we download and run them on our infrastructure). If down the line we decide to use their hosted inference service (to serve models via API without our infra), that would involve a different set of considerations and endpoints.
+\end{itemize}
+
+\subsection*{Budget and Resources}
+Because Hugging Face usage (as planned) does not require purchasing software licenses, the budget mainly involves manpower and possibly minor infrastructure costs:
+\begin{itemize}
+    \item **Manpower:** 1-2 developers for a few weeks, plus part-time involvement of a DevOps engineer for firewall and deployment setup, and a security reviewer to validate compliance.
+    \item **Infrastructure:** Storage for cached models (could be on an existing file server or artifact storage; we might allocate a few hundred GB to start, depending on how many models we anticipate downloading). Also, network egress costs (if using cloud servers to fetch data) – however, these are expected to be low and similar to any web data consumption.
+    \item **No Additional License Cost:** Using the Hub is free. If we ever consider the enterprise subscription for advanced features, that would be a separate decision with cost/benefit analysis.
+\end{itemize}
+
+\subsection*{Success Criteria}
+We will know this integration is successful when:
+\begin{itemize}
+    \item A data scientist or ML engineer can, from within our network, programmatically query the Hugging Face Hub (e.g., find a model by name or filter) and retrieve results in seconds.
+    \item They can request to download a model or dataset, and it gets pulled into our environment (to a predefined location) without manual intervention, in a reasonable time frame (taking into account file size).
+    \item The system logs which models/datasets were fetched and prevents disallowed content (e.g., if someone tries to fetch a model with a non-approved license, it should warn or block).
+    \item There are no security incidents or policy violations after introducing this capability – meaning our controls are effectively mitigating risks.
+\end{itemize}
+
+\vspace{1em}
+
+\noindent \textit{Prepared by: [Your Name], [Your Team] \hfill Date: \today}
+\end{document}
