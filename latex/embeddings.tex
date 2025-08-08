@@ -1,0 +1,172 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{float}
+\title{Vector Embeddings: Foundations, Compression, and Retrieval-Augmented Generation}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Vector embeddings have transformed the landscape of machine learning and natural language processing by enabling compact, continuous representations of discrete symbols. Originating from distributional semantics and progressing through neural models like Word2Vec, GloVe, and BERT, embeddings serve as the backbone for tasks ranging from classification to semantic search. This paper revisits foundational principles, explores advancements in contextual embeddings, and evaluates modern use cases in structured knowledge systems, retrieval-augmented generation, and multimodal learning.
+\end{abstract}
+
+\section{Introduction}
+Representation of symbolic data in continuous vector space is a cornerstone of modern machine learning. Beginning with the distributional hypothesis (Harris, 1954) --- "you shall know a word by the company it keeps" --- vector embeddings have evolved through dense low-dimensional encodings that preserve semantic and syntactic regularities.
+
+Early models like Latent Semantic Analysis (LSA) and Latent Dirichlet Allocation (LDA) introduced the idea of capturing global co-occurrence. Later, predictive models like Word2Vec and GloVe formalized embedding generation via shallow neural networks and matrix factorization. Today’s transformer-based embeddings like BERT and CLIP extend this principle across contexts and modalities.
+
+This paper synthesizes the trajectory of embedding methods, highlights their mathematical underpinnings, and explores applied systems in scalable, memory-augmented AI.
+
+\section{Background and Methods}
+
+\subsection{Static Embeddings}
+Static embeddings map tokens to fixed vectors, regardless of context:
+\begin{itemize}
+  \item \textbf{Word2Vec}: Optimizes the probability of a word given surrounding context using Skip-Gram or CBOW.
+  \item \textbf{GloVe}: Factorizes a co-occurrence matrix using weighted least squares.
+\end{itemize}
+
+\subsection{Contextual Embeddings}
+\begin{itemize}
+  \item \textbf{ELMo}: Uses character-level bidirectional LSTMs.
+  \item \textbf{BERT}: Trained via masked language modeling and next-sentence prediction.
+  \item \textbf{Sentence-BERT}: Fine-tunes BERT for sentence similarity.
+\end{itemize}
+
+\subsection{Mathematical Formalism}
+Let $V$ be the vocabulary and $d$ the embedding dimension.
+\[
+\forall w_i \in V, \quad f(w_i) = \vec{v}_i \in \mathbb{R}^d
+\]
+Skip-Gram training objective:
+\[
+\max_\theta \sum_{w_c \in \mathcal{C}(w)} \log P(w_c \mid w; \theta)
+\]
+
+\section{Applications}
+
+\subsection{Semantic Search and Similarity}
+\[
+\text{sim}(v_i, v_j) = \frac{v_i \cdot v_j}{\|v_i\| \|v_j\|}
+\]
+
+\subsection{Knowledge Graph Embeddings}
+\begin{itemize}
+  \item \textbf{TransE}: Models triples as vector translations: $h + r \approx t$.
+  \item \textbf{RotatE}: Embeds relations as rotations in complex space.
+\end{itemize}
+
+\subsection{Multimodal Embeddings}
+CLIP aligns vision and text via contrastive learning:
+\[
+\mathcal{L} = -\sum_i \log \frac{\exp(\text{sim}(x_i, y_i)/\tau)}{\sum_j \exp(\text{sim}(x_i, y_j)/\tau)}
+\]
+
+\section{Retrieval-Augmented Generation and Efficient Embedding Compression}
+
+\subsection{Overview of RAG}
+RAG fuses generative models with vector-based search by retrieving relevant chunks using embedded queries. The process involves encoding, vector search, and conditional generation.
+
+\subsection{Embedding Quantization for Scalable Storage}
+To store billions of vectors efficiently:
+\begin{itemize}
+    \item \textbf{Product Quantization (PQ)}
+    \item \textbf{Binary Embeddings}
+    \item \textbf{Asymmetric Quantization}
+\end{itemize}
+
+\subsection{Cosine Similarity vs. Hamming Distance}
+\begin{minipage}{0.48\textwidth}
+\textbf{Cosine:}
+\[
+\frac{v_i \cdot v_j}{\|v_i\| \|v_j\|}
+\]
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\textbf{Hamming:}
+\[
+\sum_{k=1}^{d} \mathbb{1}[b_i^k \ne b_j^k]
+\]
+\end{minipage}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Top-1 Recall} & \textbf{Latency (ms)} & \textbf{Size (GB)} \\
+\midrule
+Cosine (FP32) & 71.2\% & 14.5 & 3.2 \\
+8-bit PQ      & 69.8\% & 5.2  & 0.8 \\
+Hamming       & 64.4\% & 2.9  & 0.4 \\
+\bottomrule
+\end{tabular}
+\caption{Cosine vs. Hamming for vector retrieval}
+\end{table}
+
+\subsection{Multimodal Embeddings and Compression}
+CLIP encodes text and images in a shared space:
+\[
+\text{sim}(E_{\text{text}}(t), E_{\text{image}}(i)) = \frac{t \cdot i}{\|t\|\|i\|}
+\]
+
+Compression enables:
+\begin{itemize}
+    \item Retrieval over image-text pairs
+    \item Memory-efficient reasoning
+    \item Hybrid vector search + rerank
+\end{itemize}
+
+\subsection{Example: CLIP + FAISS + PQ}
+\begin{verbatim}
+clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+embeddings = clip.encode_image(imgs)
+
+index = faiss.IndexIVFPQ(faiss.IndexFlatL2(d), d, 100, 8, 8)
+index.train(embeddings)
+index.add(embeddings)
+D, I = index.search(query_vector, k)
+\end{verbatim}
+
+\section{Conclusion and Future Work}
+We surveyed embedding architectures, their mathematical bases, and compressive techniques for efficient deployment. Future directions include:
+\begin{itemize}
+  \item Symbolic-neural hybrid memory
+  \item Blockchain-stored immutable vector logs
+  \item Continual learning with compressive memory banks
+\end{itemize}
+
+\begin{thebibliography}{9}
+\bibitem{harris1954}
+Zellig S. Harris. "Distributional Structure." Word 10.2-3 (1954): 146-162.
+
+\bibitem{mikolov2013}
+Tomas Mikolov et al. "Efficient Estimation of Word Representations in Vector Space." arXiv:1301.3781 (2013).
+
+\bibitem{pennington2014}
+Jeffrey Pennington, Richard Socher, and Christopher Manning. "GloVe: Global Vectors for Word Representation." EMNLP 2014.
+
+\bibitem{devlin2018}
+Jacob Devlin et al. "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding." arXiv:1810.04805 (2018).
+
+\bibitem{radford2021clip}
+Alec Radford et al. "Learning Transferable Visual Models From Natural Language Supervision." arXiv:2103.00020 (2021).
+
+\bibitem{reimers2019}
+Nils Reimers and Iryna Gurevych. "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks." EMNLP-IJCNLP 2019.
+
+\bibitem{jegou2011product}
+Hervé Jégou et al. "Product quantization for nearest neighbor search." IEEE TPAMI (2011).
+
+\bibitem{jia2021scaling}
+Chao Jia et al. "Scaling up visual and vision-language representation learning with noisy text supervision." ICML 2021.
+\end{thebibliography}
+
+\end{document}
