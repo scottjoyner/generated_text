@@ -1,0 +1,118 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{times}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{codegray}{gray}{0.95}
+\lstset{
+  backgroundcolor=\color{codegray},
+  basicstyle=\ttfamily\small,
+  frame=single,
+  breaklines=true
+}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Patent Proposal}
+\lhead{Graph-Based RAG System}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{1em}{}
+
+\title{\Huge\bfseries Patent Proposal: Graph-Based RAG System with Chain-of-Thought Traceability and Multi-Level Caching}
+\author{\textsc{Inventor: Scott Joyner}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Abstract}
+This patent proposes a system combining graph databases, vector embeddings, and multi-tier caching to optimize the retrieval-augmented generation (RAG) process for large language models (LLMs). It stores chain-of-thought (CoT) reasoning steps as nodes in Neo4j, allows traceable retrieval paths, and caches final conclusions in Redis to reduce redundant computation. The system evolves by learning from interactions and reduces GPU usage over time.
+
+\section*{Field of the Invention}
+Artificial Intelligence Systems, Knowledge Graphs, Natural Language Processing, Caching, and Large Language Model Optimization.
+
+\section*{Background of the Invention}
+LLMs struggle with repeated queries and recomputation. Techniques like CoT prompting and RAG improve reasoning but increase cost. Related research includes:
+\begin{itemize}
+  \item Vec2Vec embedding translation (Gao, 2023)\footnote{\url{https://arxiv.org/abs/2306.12689}}
+  \item Knowledge Graph Embedding (Ge et al., 2023)\footnote{\url{https://arxiv.org/abs/2309.12501}}
+  \item GraphRAG methods\footnote{\url{https://arxiv.org/abs/2501.10534}}
+  \item Chain-of-Thought tracing\footnote{\url{https://arxiv.org/abs/2402.10107}}
+\end{itemize}
+
+\section*{Summary of the Invention}
+The invention logs LLM reasoning in Neo4j. Each CoT step becomes a node. Redis caches conclusions. The architecture enables the system to bypass LLM inference for previously solved tasks, retrieving answers from cache and graph structure.
+
+\section*{Brief Description of the Drawings}
+(Placeholder for architecture diagram: User \textrightarrow Query \textrightarrow Embed \textrightarrow Neo4j/Redis \textrightarrow LLM if needed)
+
+\section*{Detailed Description}
+
+\subsection*{Workflow Overview}
+\begin{enumerate}
+  \item User submits a query.
+  \item Query is embedded and searched in Neo4j.
+  \item If matching reasoning path exists, final answer retrieved from Redis.
+  \item If not, RAG + LLM generates response.
+  \item Chain-of-Thought steps are logged to Neo4j.
+  \item Conclusion cached in Redis.
+\end{enumerate}
+
+\subsection*{Neo4j CoT Schema}
+\begin{lstlisting}[language=Python, caption=Creating CoT nodes in Neo4j]
+MERGE (q:Query {text: $user_query})
+MERGE (s1:Step {text: 'Step 1: analyze context'})
+MERGE (s2:Step {text: 'Step 2: retrieve data'})
+MERGE (a:Answer {text: $final_answer})
+MERGE (q)-[:LEADS_TO]->(s1)
+MERGE (s1)-[:LEADS_TO]->(s2)
+MERGE (s2)-[:LEADS_TO]->(a)
+\end{lstlisting}
+
+\subsection*{Redis Caching Layer}
+\begin{lstlisting}[language=Python, caption=Caching and retrieving with Redis]
+import redis
+r = redis.Redis()
+
+def get_cached_answer(query):
+    return r.get(query)
+
+def cache_answer(query, answer):
+    r.set(query, answer)
+\end{lstlisting}
+
+\subsection*{LLM + RAG Integration}
+\begin{lstlisting}[language=Python, caption=LangChain-style LLM fallback with RAG]
+from langchain.chains import RetrievalQA
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+
+retriever = FAISS.load_local("index", OpenAIEmbeddings()).as_retriever()
+rag_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+answer = rag_chain.run(user_query)
+\end{lstlisting}
+
+\subsection*{Adaptive Learning}
+Each new query extends the graph with additional nodes. Over time, recurring questions trigger faster retrieval and higher Redis hit rates. System performance improves as usage increases.
+
+\section*{Claims}
+\begin{enumerate}[label=\arabic*.]
+  \item A system comprising a graph database, a vector embedding module, and a caching layer, wherein chain-of-thought reasoning steps from an LLM are stored as nodes.
+  \item The system of claim 1, wherein final answers are cached in Redis upon generation.
+  \item The system of claim 1, wherein future queries reuse sub-graphs of prior reasoning to reduce compute.
+  \item The system of claim 1, further comprising an embedding transformation model (Vec2Vec) to unify vector representations.
+  \item The system of claim 1, wherein knowledge graph embeddings enable analogical reasoning.
+\end{enumerate}
+
+\section*{Conclusion}
+This invention formalizes a traceable, federated, and cost-efficient AI system combining structured reasoning memory (Neo4j), vector embeddings, and intelligent caching (Redis) to improve LLM efficiency and governance.
+
+\end{document}
