@@ -1,0 +1,5 @@
+body { background-color: #f6f8fa; }
+.app-title h1 { font-size: 1.5rem; }
+.tile .card-header, .card .card-header { font-weight: 600; }
+.badge-tag { margin: 0 4px 6px 0; }
+.table td, .table th { vertical-align: middle; }
