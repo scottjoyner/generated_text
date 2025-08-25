@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
 """
+Notes & tips
+
+Reuse of your cache: the script reads cache/<org__repo>.json exactly like your loader writes them. If a cache JSON is missing, it fetches the model card (/api/models/<repo>) and creates it.
+
+What gets downloaded: --patterns weights grabs the usual suspects: *.safetensors, *.bin, shards (*index.json), plus config.json, tokenizer, vocab, merges, etc. Use --patterns all to mirror everything the API lists, or supply your own globs.
+
+Where files go:
+
+Primary mirror under --out-dir/<org>/<repo>/<files…>
+
+Optional second copy under --copy-dir/<org>/<repo>/… (hardlinks when possible to save space).
+
+Auth: export HUGGINGFACE_TOKEN if you need to access gated/private models.
+
+Resume: if a .part file exists, it will try to resume via HTTP Range.
+
+If you want, I can also wire this into your existing enrichment step so enrich_csv runs first (to populate cache) and then this downloader runs on the unique set of repo IDs found.
+
 Download Hugging Face model binaries for a list of models.
 
 - Reuses/extends the cache JSONs created by your loader (CACHE_DIR="cache").
