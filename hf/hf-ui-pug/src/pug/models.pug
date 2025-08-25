@@ -1,0 +1,121 @@
+extends layouts/_layout.pug
+
+block variables
+  - var activePage = 'models';
+
+block content
+  .app-title.mb-3
+    .d-flex.justify-content-between.align-items-center
+      h1.mb-0
+        i.bi.bi-collection me-2
+        | Models
+      a.btn.btn-outline-secondary.btn-sm(href='/') Home
+
+  .row
+    .col-lg-3
+      .tile.card.mb-3
+        .card-header
+          i.bi.bi-funnel me-2
+          | Filters
+        .card-body
+          form#filters
+            .mb-3
+              label.form-label(for='q') Search
+              input#q.form-control(type='text', placeholder='id, name, summary...')
+            .mb-3
+              label.form-label(for='author') Author
+              select#author.form-select
+                option(value='') Any
+            .mb-3
+              label.form-label(for='tags') Tags
+              select#tags.form-select(multiple size='8')
+            .row.mb-3
+              .col
+                label.form-label(for='license') License
+                input#license.form-control(type='text', placeholder='e.g. apache-2.0')
+              .col
+                label.form-label(for='pipeline') Pipeline
+                input#pipeline.form-control(type='text', placeholder='e.g. text-generation')
+            .row.mb-3
+              .col
+                label.form-label(for='gated') Gated
+                select#gated.form-select
+                  option(value='') Any
+                  option(value='manual') manual
+                  option(value='true') true
+                  option(value='false') false
+              .col
+                label.form-label(for='private') Private
+                select#private.form-select
+                  option(value='') Any
+                  option(value='true') true
+                  option(value='false') false
+            .mb-3
+              label.form-label(for='min_downloads') Min downloads
+              input#min_downloads.form-control(type='number', min='0', step='1000', placeholder='0')
+            .row.mb-3
+              .col
+                label.form-label(for='sort') Sort
+                select#sort.form-select
+                  option(value='downloads' selected) downloads
+                  option(value='likes') likes
+                  option(value='last_modified') last_modified
+                  option(value='created_at') created_at
+                  option(value='id') id
+                  option(value='name') name
+              .col
+                label.form-label(for='order') Order
+                select#order.form-select
+                  option(value='desc' selected) desc
+                  option(value='asc') asc
+            .d-grid.gap-2
+              button#apply.btn.btn-primary(type='submit')
+                i.bi.bi-search me-2
+                | Apply
+              button#reset.btn.btn-outline-secondary(type='button')
+                i.bi.bi-x-circle me-2
+                | Reset
+    .col-lg-9
+      .tile.card
+        .card-header.d-flex.align-items-center.gap-2
+          .flex-grow-1
+            span.me-2 Results
+            span.badge.bg-secondary#total 0
+          .d-flex.align-items-center.gap-2
+            label.form-label.mb-0.small(for='page_size') Page size
+            select#page_size.form-select.form-select-sm(style='width: 90px')
+              option 10
+              option(selected) 25
+              option 50
+              option 100
+        .card-body.p-0
+          .table-responsive
+            table.table.table-sm.table-hover.mb-0
+              thead.table-light
+                tr
+                  th ID
+                  th Author
+                  th Tags
+                  th Downloads
+                  th Likes
+                  th License
+                  th Updated
+                  th
+              tbody#rows
+                tr
+                  td(colspan='8') Loading…
+        .card-footer
+          .d-flex.justify-content-between.align-items-center
+            .btn-group
+              button#prev.btn.btn-outline-secondary.btn-sm(type='button')
+                i.bi.bi-chevron-left
+                |  Prev
+              button#next.btn.btn-outline-secondary.btn-sm(type='button')
+                | Next 
+                i.bi.bi-chevron-right
+            .small.text-muted#pageinfo Page 1
+
+block scripts
+  script.
+    const API_BASE = !{JSON.stringify(API_BASE)};
+  script(src='/public/js/models.js')

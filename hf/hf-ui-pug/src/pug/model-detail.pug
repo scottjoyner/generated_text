@@ -1,0 +1,74 @@
+extends layouts/_layout.pug
+
+block variables
+  - var activePage = 'models';
+
+block content
+  .app-title.mb-3
+    .d-flex.justify-content-between.align-items-center
+      h1.mb-0
+        i.bi.bi-box-seam me-2
+        | Model
+      a.btn.btn-outline-secondary.btn-sm(href='/models')
+        i.bi.bi-arrow-left me-2
+        | Back to list
+
+  .row
+    .col-lg-8
+      .card.mb-3
+        .card-header
+          strong#model_id #{modelId}
+        .card-body
+          dl.row.mb-0#meta
+            dt.col-sm-3 Author
+            dd.col-sm-9#author —
+            dt.col-sm-3 Pipeline
+            dd.col-sm-9#pipeline —
+            dt.col-sm-3 Library
+            dd.col-sm-9#library —
+            dt.col-sm-3 License
+            dd.col-sm-9#license —
+            dt.col-sm-3 Downloads
+            dd.col-sm-9#downloads —
+            dt.col-sm-3 Likes
+            dd.col-sm-9#likes —
+            dt.col-sm-3 Last modified
+            dd.col-sm-9#last_modified —
+      .card.mb-3
+        .card-header
+          i.bi.bi-tag me-2
+          | Tags
+        .card-body#tags
+          span.text-muted —
+      .card.mb-3
+        .card-header
+          i.bi.bi-files me-2
+          | Files
+        .card-body#files
+          span.text-muted —
+      .card.mb-3
+        .card-header
+          i.bi.bi-diagram-3 me-2
+          | Spaces
+        .card-body#spaces
+          span.text-muted —
+      .card.mb-3
+        .card-header
+          i.bi.bi-braces me-2
+          | Raw JSON
+        .card-body
+          pre.mb-0#raw(style='max-height: 360px; overflow:auto;') Loading…
+
+    .col-lg-4
+      .card
+        .card-header
+          i.bi.bi-stars me-2
+          | Similar models (shared tags)
+        .card-body#similar
+          .text-muted Loading…
+
+block scripts
+  script.
+    const API_BASE = !{JSON.stringify(API_BASE)};
+    const MODEL_ID = !{JSON.stringify(modelId)};
+  script(src='/public/js/model-detail.js')
