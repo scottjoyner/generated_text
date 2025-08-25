@@ -1,0 +1,17 @@
+[project]
+name = "hf-backend"
+version = "0.1.0"
+description = "Hugging Face models backend: Postgres + Neo4j ingestion + FastAPI search API"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.111.0",
+  "uvicorn[standard]>=0.30.0",
+  "pydantic>=2.7.0",
+  "SQLAlchemy>=2.0.29",
+  "psycopg2-binary>=2.9.9",
+  "python-dotenv>=1.0.1",
+  "neo4j>=5.23.1"
+]
+
+[tool.uvicorn]
+factory = true
