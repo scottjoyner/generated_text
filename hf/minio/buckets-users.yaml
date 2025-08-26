@@ -1,0 +1,24 @@
+# buckets-users.yaml
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  name: myminio
+  namespace: minio-tenant
+spec:
+  # ... your pools/creds/etc ...
+  buckets:
+    - name: hf-models
+  users:
+    - name: models-writer
+      secret:
+        name: models-writer-creds
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: models-writer-creds
+  namespace: minio-tenant
+type: Opaque
+stringData:
+  accesskey: models-writer
+  secretkey: models-writer-password
