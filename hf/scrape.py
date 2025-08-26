@@ -67,7 +67,7 @@ def enrich_csv(input_csv="models.csv", output_csv="models_enriched.csv"):
     new_sizes = []
 
     for _, row in tqdm(df.iterrows(), total=len(df)):
-        url = row['url']
+        url = row.get('updated_url') or row.get('url')
         if pd.isna(url) or not url.startswith("https://huggingface.co"):
             new_descriptions.append("")
             new_params.append("")
