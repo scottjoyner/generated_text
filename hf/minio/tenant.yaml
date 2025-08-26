@@ -1,0 +1,26 @@
+# tenant.yaml
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  name: myminio
+  namespace: minio-tenant
+spec:
+  requestAutoCert: true        # Operator issues TLS certs via Kubernetes CA
+  image: quay.io/minio/minio:RELEASE.2025-03-20T00-00-00Z # example tag
+  credsSecret:
+    name: minio-root-creds
+  pools:
+    - servers: 1               # for production use ≥4 and multiple nodes
+      volumesPerServer: 4
+      volumeClaimTemplate:
+        metadata:
+          name: data
+        spec:
+          storageClassName: <YOUR_STORAGECLASS>   # e.g. ocs-storagecluster-ceph-rbd
+          resources:
+            requests:
+              storage: 100Gi
+          accessModes: ["ReadWriteOnce"]
+  exposeServices:
+    minio: true   # creates a Service for S3
+    console: true # creates a Service for admin console
