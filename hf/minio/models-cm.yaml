@@ -1,0 +1,11 @@
+# models-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: models-csv
+  namespace: minio-tenant
+data:
+  models.csv: |
+    model_name,url,license,params
+    huggingface/electra-small-discriminator,https://huggingface.co/google/electra-small-discriminator,Apache-2.0,14m
+    # ... your rows ...
