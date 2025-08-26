@@ -1,0 +1,27 @@
+# Containerfile
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# System deps
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# App dir (group-write so arbitrary UID can write if fsGroup is set)
+WORKDIR /app
+
+# Requirements
+COPY requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Script
+COPY download_hf_models.py /app/download_hf_models.py
+
+# Where downloads land before upload (mount emptyDir here in the Job)
+RUN mkdir -p /work && chmod -R g+rwX /work
+ENV PATH="/usr/local/bin:${PATH}"
+
+# Default: just show usage. The Job will override with args.
+CMD ["python", "/app/download_hf_models.py", "--help"]
