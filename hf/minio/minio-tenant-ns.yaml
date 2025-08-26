@@ -1,0 +1,15 @@
+# minio-tenant-ns.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: minio-tenant
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: minio-root-creds
+  namespace: minio-tenant
+type: Opaque
+stringData:
+  accesskey: root-user
+  secretkey: super-strong-root-password
