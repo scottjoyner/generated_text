@@ -1,0 +1,82 @@
+# job-download-models.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hf-models-sync
+  namespace: minio-tenant
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: default
+      containers:
+      - name: sync
+        image: <your-registry>/hf-downloader:latest
+        imagePullPolicy: IfNotPresent
+        command: ["python","/app/download_hf_models.py"]
+        args:
+          - "--input=/config/models.csv"
+          - "--out-dir=/work/out"
+          - "--copy-dir=/work/bundle"
+          - "--patterns=weights"
+          - "--manifest"
+          # MinIO (S3) target
+          - "--s3-endpoint=https://myminio.minio-tenant.svc.cluster.local:443"
+          - "--s3-bucket=hf-models"
+          - "--s3-prefix=library"
+          - "--s3-region=us-east-1"
+          - "--s3-verify=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+        env:
+          - name: HUGGINGFACE_TOKEN
+            valueFrom: { secretKeyRef: { name: hf-token, key: token } }
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom: { secretKeyRef: { name: s3-writer, key: AWS_ACCESS_KEY_ID } }
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom: { secretKeyRef: { name: s3-writer, key: AWS_SECRET_ACCESS_KEY } }
+        volumeMounts:
+          - name: work
+            mountPath: /work
+          - name: models
+            mountPath: /config
+      volumes:
+        - name: work
+          emptyDir: {}
+        - name: models
+          configMap:
+            name: models-csv
+---
+# (Optional) Cron every night at 2:10 AM
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hf-models-sync-nightly
+  namespace: minio-tenant
+spec:
+  schedule: "10 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: sync
+            image: <your-registry>/hf-downloader:latest
+            command: ["python","/app/download_hf_models.py"]
+            args:
+              - "--input=/config/models.csv"
+              - "--out-dir=/work/out"
+              - "--patterns=weights"
+              - "--manifest"
+              - "--s3-endpoint=https://myminio.minio-tenant.svc.cluster.local:443"
+              - "--s3-bucket=hf-models"
+              - "--s3-prefix=library"
+              - "--s3-region=us-east-1"
+              - "--s3-verify=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+            envFrom:
+              - secretRef: { name: s3-writer }
+            volumeMounts:
+              - { name: work, mountPath: /work }
+              - { name: models, mountPath: /config }
+          volumes:
+            - { name: work, emptyDir: {} }
+            - { name: models, configMap: { name: models-csv } }
