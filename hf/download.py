@@ -19,6 +19,7 @@ Resume: if a .part file exists, it will try to resume via HTTP Range.
 If you want, I can also wire this into your existing enrichment step so enrich_csv runs first (to populate cache) and then this downloader runs on the unique set of repo IDs found.
 
 Download Hugging Face model binaries for a list of models.
+Download Hugging Face model binaries for a list of models.
 
 - Reuses/extends the cache JSONs created by your loader (CACHE_DIR="cache").
 - Works off columns: repo_id (preferred), url (https://huggingface.co/<org>/<repo>),
@@ -115,6 +116,11 @@ def resolve_repo_id(row: dict) -> Optional[str]:
       3) model_id column (exact)
       4) model_name column (only if it contains '/')
     """
+    if "updated_url" in row and isinstance(row["updated_url"], str):
+        rid = extract_repo_id_from_url(row["updated_url"])
+        if rid:
+            return sanitize_repo_id(rid)
+    
     for key in ("repo_id", "model_id"):
         if key in row and isinstance(row[key], str) and "/" in row[key]:
             return sanitize_repo_id(row[key])
