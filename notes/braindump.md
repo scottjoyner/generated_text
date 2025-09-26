@@ -1,265 +1,131 @@
-Friendly & welcoming
+Friendly / welcoming
 
-SMILE → Shared Model Innovation Library & Exchange (approachable, positive)
+SMILE → Shared Model Library & Exchange
 
-PANDA → Platform for AI & Neural Data/Models Access (cute but serious)
+HUG → Hosted Model Library for Unified Governance
 
-MUSE → Model Utility, Sharing & Exchange (creative)
+NEST → Networked Model Library for Shared Transformers
 
-NEST → Neutral/Networked Enterprise Shared Transformers (safe harbor)
+GARDEN → General Model Library for Reuse & ENsembles
 
-HARBOR → Hosted AI Repository & Model BROkering (trust, safety)
+CLOVER → Collaborative Model Library Of Verified Reuse
 
-HIVE → Hosted/Hybrid Intelligence Vault & Exchange (collaborative)
+COMMONS → COmpany Model Library & MOdels Networked Store
 
-COMMONS → COllective Model & Model Operations Networked Store (open, communal)
+MUSE → Model Library for Utility, Sharing & Exchange
 
-ATELIER → AI Template & Library for Experiments, Iteration & Reuse (crafty)
+HARBOR → Hosted Model Library & BROkering
 
-GARDEN → General AI Repository & Data/Model ENsemble (growth)
+HAVEN → Hosted Model Library for Verified ENgineering
 
-CLOVER → Collaborative Library Of Verified Enterprise Reuse (lucky, friendly)
+HIVE → Hybrid Model Library & Intelligence Vault/Exchange
 
-Library/knowledge vibes
+Library / knowledge vibes
 
-ATLAS → Applied Transformers Library & Services (big, maplike)
+ATLAS → Applied Model Library & Services
 
-SCRIBE → Shared Catalog for Reusable Intelligent Building Elements (documentation vibe)
+INDEX → Integrated Model Library & Data EXchange
 
-STACK → Shared Transformers & Components Kit (engineering)
+CANON → Corporate Model Library Of kNowledge
 
-ANNEX → AI Nexus & Exchange (library wing)
+CODEx → COmpany Model Library & Data EXchange
 
-INDEX → Integrated Neural/Model Data Exchange (searchable)
+SCRIBE → Shared Model Library for Reusable Building Elements
 
-CODex → COllective Data/Model EXchange (scholarly)
+LIBRA → Model Library for Baselines, Reuse & Assets
 
-FABLE → Foundation & Applied Model Library Exchange (storytelling)
+SCROLL → Shared Model Library of Reusable Learning Layers
 
-SCROLL → Shared Catalog of Reusable Open/Org Learning Layers (ancient-modern)
+ANNEX → Model Library Nexus & Exchange
 
-CANON → Corporate AI/Model kNOwledge (authoritative set)
+CATALOG → Corporate Model Library Catalog & Governance
 
-LIBRA → Library for Intelligent Baselines, Reuse & Assets (balanced)
+ALMANAC → Applied Model Library for Models, Assets & Components
 
-Workshop/forge vibes
+Workshop / forge vibes
 
-FORGE → Foundation/Operational Reusable model GEar (built to last)
+FORGE → Foundation Model Library & Reusable GEar
 
-FOUNDRY → Foundation Models & Reuse Directory (industrial)
+FOUNDRY → Foundation Model Library & Reuse DirectorY
 
-SMITH → Shared Model Integrations, Templates & Hub (craftsmanship)
+SMITH → Shared Model Library for Integrations, Templates & Hub
 
-MILL → Model Integration, Logistics & Library (production line)
+MILL → Model Library for Integration, Logistics & Lifecycle
 
-LOOM → Library Of Orchestrated Models (weaving components)
+LOOM → Library Of Orchestrated Model Library Modules
 
-WORKSHOP → WORKflows, SHared mOdel Platform (hands-on)
+ANVIL → Model Library for Versioned Intelligence & Lifecycle
 
-ANVIL → AI kNowledge & Versioned Intelligence Library (metal-hard)
+MASON → Model Library for Assembly & Shared Operations Network
 
-MASON → Model Assembly & Shared Operations Network (builder)
+FABRIC → Model Library Base, Registry & Integration Catalog
 
-FABRIC → Foundational AI Base, Registry & Integration Catalog (interwoven)
+STUDIO → Shared Model Library for Templates & Deployment I/O
 
-STUDIO → Shared Transformers, Utilities, & Deployment I/O (creative + practical)
+WORKSHOP → Model Library for WORKflows & Shared Operations Platform
 
-Platform/hub vibes
+Platform / hub vibes
 
-HUBBLE → HUB for Baselines & Library Exchange (curious, cosmic)
+NEXUS → Networked Model Library for Unified eXchange
 
-ORBIT → ORganizational Repository for Baselines & Intelligent Templates (central gravity)
+PORTAL → Platform Of Reusable Transformers: Model Library
 
-NEXUS → Networked EXchange for Unified models & Services (central node)
+DOCK → Deployable Model Library Components Kit
 
-PORTAL → Platform Of Reusable Transformers & AI Library (entry point)
+BRIDGE → Model Library for Reuse, Data, Governance & Exchange
 
-DOCK → Deployable/Documented Open Components Kit (ships & apps)
+GATE → Model Library Governance & Template Exchange
 
-BRIDGE → Baselines & Reusable Integrations for Data/Model Governance & Exchange (connective)
+CANVAS → Catalog & Versioned Model Library ASsets
 
-GATE → Governance & AI Template Exchange (policy-friendly)
+PLAZA → Platform Model Library for Assets & Reuse
 
-CANVAS → Catalog & Versioned AI/Model ASsets (blank slate)
+ARCADE → Model Library for Components, Assets, Deployments & Experiments
 
-PLAZA → Platform Library for AI, reuZe & Assets (public square)
+HUBBLE → HUB for Baselines & Model Library Exchange
 
-ARCADE → AI Repository for Components, Assets, Deployments & Experiments (fun but enterprise-safe)
+ORBIT → ORganizational Repository & Model Library for Intelligent Templates
 
-Trust, governance & reliability
+Trust / governance
 
-VAULT → Verified AI/Model Utility Library & Trust (secure)
+VAULT → Verified Model Library & Trust
 
-CURATE → Corporate Unified Registry & AI Template Exchange (tasteful)
+CURATE → Corporate Unified Model Library & Template Exchange
 
-PROVEN → PRoduction-ready mOdel VERification Network (assurance)
+PROVEN → Production-Ready Model Library & VERification Network
 
-CERTA → CERTified AI Templates & Assets (compliance)
+CERTA → CERTified Model Library Templates & Assets
 
-ANCHOR → AI kNowledge Catalog & Hosted ORchestrations (stability)
+ANCHOR → Model Library Catalog & Hosted ORchestrations
 
-AUGUR → AI Utility & Governance Repository (foresight)
+AUGUR → Model Library Utility & Governance Repository
 
-SHERPA → SHared Enterprise Repository for Patterns & Artifacts (guide)
+SHERPA → Shared Model Library for Patterns & Artifacts
 
-PARADE → Production-Approved Reusable AI/Model DEpots (celebratory but formal)
+TRUST → Model Library for Unified Standards & Templates
 
-TRUST → Transformers Registry for Unified Standards & Templates (direct)
+POLARIS → Policy-Led Model Library & Integration Store
 
-POLARIS → POlicy-Led AI Repository & Integration Store (north star)
+SEAL → Secure Model Library for Engineering & Lifecycle
 
 Playful-but-professional
 
-PATIO → Platform for AI Templates, Integrations & Objects (hangout vibes)
+PATIO → Platform Model Library for Templates, Integrations & Objects
 
-BENTO → Baselines & ENgineered Templates Organizer (neat compartments)
+BENTO → Baseline Model Library & Engineered Templates Organizer
 
-PASTA → Platform for AI Systems, Tools & Assets (memorable, light)
+PASTA → Platform Model Library for AI Systems, Tools & Assets
 
-SAUCE → Shared AI/Model Utilities, Components & Exchange (secret sauce)
+SAUCE → Shared Model Library for Utilities, Components & Exchange
 
-SPARK → Shared Platform for AI/Model Reuse & Kits (ignition)
+SPARK → Shared Platform Model Library for Reuse & Kits
 
-MIXER → Model Integrations eXchange & Enterprise Registry (blend)
+MIXER → Model Library Integrations eXchange & Registry
 
-MOSAIC → Models & Shared AI Components (colorful recombination)
+MOSAIC → Model Library Of Shared AI Components
 
-PILOT → Platform for Intelligent Libraries, Orchestrations & Templates (getting to prod)
+PILOT → Platform Model Library for Intelligent Orchestrations & Templates
 
-BEACON → Baselines & Enterprise AI COmponents Network (guiding light)
+BEACON → Model Library for Baselines & COmponents Network
 
-CITRUS → CIrcular Templates & Reusable Utility Store (fresh, zesty)
-
-
-
-Friendly & welcoming
-
-SMILE → Shared Model Innovation Library & Exchange (approachable, positive)
-
-PANDA → Platform for AI & Neural Data/Models Access (cute but serious)
-
-MUSE → Model Utility, Sharing & Exchange (creative)
-
-NEST → Neutral/Networked Enterprise Shared Transformers (safe harbor)
-
-HARBOR → Hosted AI Repository & Model BROkering (trust, safety)
-
-HIVE → Hosted/Hybrid Intelligence Vault & Exchange (collaborative)
-
-COMMONS → COllective Model & Model Operations Networked Store (open, communal)
-
-ATELIER → AI Template & Library for Experiments, Iteration & Reuse (crafty)
-
-GARDEN → General AI Repository & Data/Model ENsemble (growth)
-
-CLOVER → Collaborative Library Of Verified Enterprise Reuse (lucky, friendly)
-
-Library/knowledge vibes
-
-ATLAS → Applied Transformers Library & Services (big, maplike)
-
-SCRIBE → Shared Catalog for Reusable Intelligent Building Elements (documentation vibe)
-
-STACK → Shared Transformers & Components Kit (engineering)
-
-ANNEX → AI Nexus & Exchange (library wing)
-
-INDEX → Integrated Neural/Model Data Exchange (searchable)
-
-CODex → COllective Data/Model EXchange (scholarly)
-
-FABLE → Foundation & Applied Model Library Exchange (storytelling)
-
-SCROLL → Shared Catalog of Reusable Open/Org Learning Layers (ancient-modern)
-
-CANON → Corporate AI/Model kNOwledge (authoritative set)
-
-LIBRA → Library for Intelligent Baselines, Reuse & Assets (balanced)
-
-Workshop/forge vibes
-
-FORGE → Foundation/Operational Reusable model GEar (built to last)
-
-FOUNDRY → Foundation Models & Reuse Directory (industrial)
-
-SMITH → Shared Model Integrations, Templates & Hub (craftsmanship)
-
-MILL → Model Integration, Logistics & Library (production line)
-
-LOOM → Library Of Orchestrated Models (weaving components)
-
-WORKSHOP → WORKflows, SHared mOdel Platform (hands-on)
-
-ANVIL → AI kNowledge & Versioned Intelligence Library (metal-hard)
-
-MASON → Model Assembly & Shared Operations Network (builder)
-
-FABRIC → Foundational AI Base, Registry & Integration Catalog (interwoven)
-
-STUDIO → Shared Transformers, Utilities, & Deployment I/O (creative + practical)
-
-Platform/hub vibes
-
-HUBBLE → HUB for Baselines & Library Exchange (curious, cosmic)
-
-ORBIT → ORganizational Repository for Baselines & Intelligent Templates (central gravity)
-
-NEXUS → Networked EXchange for Unified models & Services (central node)
-
-PORTAL → Platform Of Reusable Transformers & AI Library (entry point)
-
-DOCK → Deployable/Documented Open Components Kit (ships & apps)
-
-BRIDGE → Baselines & Reusable Integrations for Data/Model Governance & Exchange (connective)
-
-GATE → Governance & AI Template Exchange (policy-friendly)
-
-CANVAS → Catalog & Versioned AI/Model ASsets (blank slate)
-
-PLAZA → Platform Library for AI, reuZe & Assets (public square)
-
-ARCADE → AI Repository for Components, Assets, Deployments & Experiments (fun but enterprise-safe)
-
-Trust, governance & reliability
-
-VAULT → Verified AI/Model Utility Library & Trust (secure)
-
-CURATE → Corporate Unified Registry & AI Template Exchange (tasteful)
-
-PROVEN → PRoduction-ready mOdel VERification Network (assurance)
-
-CERTA → CERTified AI Templates & Assets (compliance)
-
-ANCHOR → AI kNowledge Catalog & Hosted ORchestrations (stability)
-
-AUGUR → AI Utility & Governance Repository (foresight)
-
-SHERPA → SHared Enterprise Repository for Patterns & Artifacts (guide)
-
-PARADE → Production-Approved Reusable AI/Model DEpots (celebratory but formal)
-
-TRUST → Transformers Registry for Unified Standards & Templates (direct)
-
-POLARIS → POlicy-Led AI Repository & Integration Store (north star)
-
-Playful-but-professional
-
-PATIO → Platform for AI Templates, Integrations & Objects (hangout vibes)
-
-BENTO → Baselines & ENgineered Templates Organizer (neat compartments)
-
-PASTA → Platform for AI Systems, Tools & Assets (memorable, light)
-
-SAUCE → Shared AI/Model Utilities, Components & Exchange (secret sauce)
-
-SPARK → Shared Platform for AI/Model Reuse & Kits (ignition)
-
-MIXER → Model Integrations eXchange & Enterprise Registry (blend)
-
-MOSAIC → Models & Shared AI Components (colorful recombination)
-
-PILOT → Platform for Intelligent Libraries, Orchestrations & Templates (getting to prod)
-
-BEACON → Baselines & Enterprise AI COmponents Network (guiding light)
-
-CITRUS → CIrcular Templates & Reusable Utility Store (fresh, zesty)
+CITRUS → CIrcular Model Library for Tools & Reusable Utility Store
