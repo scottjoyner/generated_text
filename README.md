@@ -13,3 +13,10 @@ Do not publish prompts, session transcripts, credentials, or generated material 
 ## Status
 
 Documentation scaffold only; the existence of a working generator and current model compatibility have not been verified here.
+
+## Repository links
+
+- [Browse the default-branch files](https://github.com/scottjoyner/generated_text/tree/main)
+- [Review repository history](https://github.com/scottjoyner/generated_text/commits/main)
+
+These links refer to this checkout and do not constitute build or deployment verification.
