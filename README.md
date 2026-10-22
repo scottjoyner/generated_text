@@ -1,22 +1,19 @@
-# generated_text
+# generated_text — mixed research and web/graph prototypes
 
-A repository for generated-text-related code or artifacts. The current root README did not provide a verifiable project overview, dependency list, or execution instructions.
+A **collection of heterogeneous exploratory files**, not a packaged text-generation model or a single deployment. The default branch includes Python and Node scripts, HTML/Pug templates, Cypher files, data-ingest experiments, report generation, and research notes.
 
-## Orientation
+## Source navigation
 
-Identify the text-generation entry point and the expected inputs/outputs from the checked-in files before running any scripts. Add a minimal deterministic example, runtime requirements, and provenance for any example generated output.
+- `*.cy` — Cypher scripts or examples; inspect them before use on a graph database.
+- `neo4j_ingestion.py`, `py2neo.py`, `fastcyAPI.py` — Neo4j-related experiments.
+- `app.py`, `app.js`, `cli.py`, `generate.py`, `report.py` — distinct Python/JavaScript entry-point candidates whose invocation has not been validated.
+- `*.pug`, `*.html` — experimental templates/frontends.
+- `setup.py`, `hf/`, `notes/` — mixed setup/research artifacts.
 
-## Privacy and attribution
+## Operational boundaries
 
-Do not publish prompts, session transcripts, credentials, or generated material containing private user data without permission. Record the model/version and generation settings with reproducible examples.
+There is **no verified repository-wide dependency installation, test runner, GraphQL/Neo4j connection, model provider, or data-ingest workflow**. Test each independently after reading its source and external side effects. Keep graph writes and file uploads disabled against production resources; use disposable databases and synthetic inputs.
 
-## Status
+Protect customer/intake forms, credentials, prompts, transcripts, generated artifacts, and original data provenance. For model requests, preserve provider/model identification, request errors, usage estimates, and redacted traces without exposing raw sensitive content.
 
-Documentation scaffold only; the existence of a working generator and current model compatibility have not been verified here.
-
-## Repository links
-
-- [Browse the default-branch files](https://github.com/scottjoyner/generated_text/tree/main)
-- [Review repository history](https://github.com/scottjoyner/generated_text/commits/main)
-
-These links refer to this checkout and do not constitute build or deployment verification.
+**Status:** source/tree documentation only. No network calls, graph writes, model runs, or application deployments performed.
